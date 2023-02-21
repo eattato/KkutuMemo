@@ -36,13 +36,13 @@
             this.title = new System.Windows.Forms.Label();
             this.minimum = new KkutuMemo.MoremiButton();
             this.close = new KkutuMemo.MoremiButton();
+            this.sortLength = new KkutuMemo.MoremiRadioButton();
             this.sortFrom = new KkutuMemo.MoremiRadioButton();
-            this.targets = new KkutuMemo.GlassPanel();
             this.deathWord = new KkutuMemo.MoremiRadioButton();
             this.injungWord = new KkutuMemo.MoremiRadioButton();
             this.submit = new KkutuMemo.MoremiButton();
             this.search = new KkutuMemo.BetterTextbox();
-            this.sortLength = new KkutuMemo.MoremiRadioButton();
+            this.targets = new System.Windows.Forms.FlowLayoutPanel();
             this.bg.SuspendLayout();
             this.glassPanel1.SuspendLayout();
             this.titleFrame.SuspendLayout();
@@ -51,9 +51,9 @@
             // bg
             // 
             this.bg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.bg.Controls.Add(this.targets);
             this.bg.Controls.Add(this.sortLength);
             this.bg.Controls.Add(this.sortFrom);
-            this.bg.Controls.Add(this.targets);
             this.bg.Controls.Add(this.current);
             this.bg.Controls.Add(this.deathWord);
             this.bg.Controls.Add(this.injungWord);
@@ -156,6 +156,28 @@
             this.close.Text = "닫기";
             this.close.UseVisualStyleBackColor = false;
             // 
+            // sortLength
+            // 
+            this.sortLength.Active = true;
+            this.sortLength.BackColor = System.Drawing.Color.Cyan;
+            this.sortLength.CornerRadius = 10;
+            this.sortLength.CornerUnder = true;
+            this.sortLength.FlatAppearance.BorderSize = 0;
+            this.sortLength.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.sortLength.Font = new System.Drawing.Font("한컴 고딕", 7F);
+            this.sortLength.ForeColor = System.Drawing.Color.Black;
+            this.sortLength.Location = new System.Drawing.Point(269, 41);
+            this.sortLength.Margin = new System.Windows.Forms.Padding(0);
+            this.sortLength.Name = "sortLength";
+            this.sortLength.OffColor = System.Drawing.Color.MediumAquamarine;
+            this.sortLength.OffString = "짧은 단어부터";
+            this.sortLength.OnColor = System.Drawing.Color.Cyan;
+            this.sortLength.OnString = "긴 단어부터";
+            this.sortLength.Size = new System.Drawing.Size(75, 25);
+            this.sortLength.TabIndex = 9;
+            this.sortLength.Text = "긴 단어부터";
+            this.sortLength.UseVisualStyleBackColor = false;
+            // 
             // sortFrom
             // 
             this.sortFrom.Active = true;
@@ -177,13 +199,6 @@
             this.sortFrom.TabIndex = 8;
             this.sortFrom.Text = "시작 단어부터";
             this.sortFrom.UseVisualStyleBackColor = false;
-            // 
-            // targets
-            // 
-            this.targets.Location = new System.Drawing.Point(15, 120);
-            this.targets.Name = "targets";
-            this.targets.Size = new System.Drawing.Size(570, 229);
-            this.targets.TabIndex = 7;
             // 
             // deathWord
             // 
@@ -258,27 +273,13 @@
             this.search.TabIndex = 1;
             this.search.Text = "여기에 텍스트를 입력하세요..";
             // 
-            // sortLength
+            // targets
             // 
-            this.sortLength.Active = true;
-            this.sortLength.BackColor = System.Drawing.Color.Cyan;
-            this.sortLength.CornerRadius = 10;
-            this.sortLength.CornerUnder = true;
-            this.sortLength.FlatAppearance.BorderSize = 0;
-            this.sortLength.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sortLength.Font = new System.Drawing.Font("한컴 고딕", 7F);
-            this.sortLength.ForeColor = System.Drawing.Color.Black;
-            this.sortLength.Location = new System.Drawing.Point(269, 41);
-            this.sortLength.Margin = new System.Windows.Forms.Padding(0);
-            this.sortLength.Name = "sortLength";
-            this.sortLength.OffColor = System.Drawing.Color.MediumAquamarine;
-            this.sortLength.OffString = "짧은 단어부터";
-            this.sortLength.OnColor = System.Drawing.Color.Cyan;
-            this.sortLength.OnString = "긴 단어부터";
-            this.sortLength.Size = new System.Drawing.Size(75, 25);
-            this.sortLength.TabIndex = 9;
-            this.sortLength.Text = "긴 단어부터";
-            this.sortLength.UseVisualStyleBackColor = false;
+            this.targets.Location = new System.Drawing.Point(15, 120);
+            this.targets.Margin = new System.Windows.Forms.Padding(0);
+            this.targets.Name = "targets";
+            this.targets.Size = new System.Drawing.Size(570, 230);
+            this.targets.TabIndex = 10;
             // 
             // form
             // 
@@ -312,9 +313,9 @@
         private MoremiRadioButton injungWord;
         private MoremiRadioButton deathWord;
         private System.Windows.Forms.Label current;
-        private GlassPanel targets;
         private MoremiRadioButton sortFrom;
         private MoremiRadioButton sortLength;
+        private System.Windows.Forms.FlowLayoutPanel targets;
     }
 }
 

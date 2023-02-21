@@ -68,6 +68,22 @@ namespace KkutuMemo
             return result;
         }
 
+        private Button createButtonFromWord(Word word)
+        {
+            string text = word.word + " " + String.Join(" ", word.tags.ToArray());
+            Button button = new Button()
+            {
+                Text = text,
+                Size = new Size(570, 30),
+                Font = new Font("한컴 고딕", 24),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            button.MouseClick += (sender, e) => { this.search.Text = word.word; this.current.Text = text; };
+            button.Parent = this.targets;
+
+            return button;
+        }
+
         private void updateSearch(object sender, EventArgs e)
         {
             string search = this.search.Text;
@@ -149,6 +165,10 @@ namespace KkutuMemo
 
             // 순서에 맞게 정렬
             targets = sortWords(targets);
+            foreach (Word word in targets)
+            {
+                createButtonFromWord(word);
+            }
         }
 
         // Drag
