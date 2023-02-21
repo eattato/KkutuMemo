@@ -39,6 +39,7 @@ namespace KkutuMemo
 
 
             // 메인 로직
+            // 여기에 JSON 파일 로드하는 부분 넣기
             this.search.TextChanged += updateSearch;
         }
 
