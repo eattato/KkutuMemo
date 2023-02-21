@@ -1,0 +1,11 @@
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.csproj.AssemblyReference.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.csproj.SuggestedBindingRedirects.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.form.resources
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.Properties.Resources.resources
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.csproj.GenerateResource.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.csproj.CoreCompileInputs.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Debug\KkutuMemo.exe.config
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Debug\KkutuMemo.exe
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Debug\KkutuMemo.pdb
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.exe
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Debug\KkutuMemo.pdb
