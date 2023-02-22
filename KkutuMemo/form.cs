@@ -43,8 +43,8 @@ namespace KkutuMemo
             // 메인 로직
             words = loadWords("../../Resources/words.txt");
             words = words.Concat(loadWords("../../Resources/long.txt", new string[] { "[긴단어]" })).ToList();
-            Debug.WriteLine(words.Count);
-            this.search.TextChanged += updateSearch;
+            //this.search.TextChanged += updateSearch;
+            this.submit.MouseClick += updateSearch;
         }
 
         // Main
@@ -88,17 +88,17 @@ namespace KkutuMemo
             int loopCount = targets.Count;
             while (targets.Count > 0)
             {
-                int highest = -1;
+                int target = -1;
                 for (int ind = 0; ind < targets.Count; ind++)
                 {
                     Word word = targets[ind];
-                    if (highest == -1 || targets[highest].priority < word.priority)
+                    if (target == -1 || targets[target].priority > word.priority)
                     {
-                        highest = ind;
+                        target = ind;
                     }
                 }
-                result.Add(targets[highest]);
-                targets.RemoveAt(highest);
+                result.Add(targets[target]);
+                targets.RemoveAt(target);
             }
             return result;
         }
@@ -122,94 +122,98 @@ namespace KkutuMemo
 
         private void updateSearch(object sender, EventArgs e)
         {
-            foreach(Button button in wordButtons)
+            string search = this.search.Text;
+            foreach (Button button in wordButtons)
             {
                 button.Dispose();
             }
             wordButtons = new List<Button>();
 
-            string search = this.search.Text;
-
-            string[] split = search.Split(' ');
-            bool hanbang = this.deathWord.Active;
-            bool injung = this.injungWord.Active;
-            bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
-            bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
-
-            List<Word> targets = new List<Word>();
-
-            // 해당 조건에 맞는 단어들 가져옴
-            foreach (Word word in words)
+            if (search.Length >= 1)
             {
-                if (word.hasTag("[한방]") == hanbang && word.hasTag("[어인정]") == injung)
+                string[] split = search.Split(' ');
+                bool hanbang = this.deathWord.Active;
+                bool injung = this.injungWord.Active;
+                bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
+                bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
+
+                List<Word> targets = new List<Word>();
+
+                // 해당 조건에 맞는 단어들 가져옴
+                foreach (Word word in words)
                 {
-                    // 필터 검사
-                    bool filterDone = true;
-                    for (int ind = 1; ind < split.Length; ind++)
+                    // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
+                    if (!(hanbang == false && word.hasTag("[한방]") || injung == false && word.hasTag("[어인정]")))
                     {
-                        string filter = split[ind];
-                        if (word.checkFilter(filter) != 1)
+                        // 필터 검사
+                        bool filterDone = true;
+                        for (int ind = 1; ind < split.Length; ind++)
                         {
-                            filterDone = false;
-                            break;
+                            string filter = split[ind];
+                            if (word.checkFilter(filter) != 1)
+                            {
+                                filterDone = false;
+                                break;
+                            }
                         }
-                    }
 
-                    if (filterDone)
-                    {
-                        bool start = word.word.StartsWith(split[0]);
-                        bool end = word.word.EndsWith(split[0]);
-                        bool contains = word.word.Contains(split[0]);
-
-                        if (start || end || contains)
+                        if (filterDone)
                         {
-                            // 시작 단어냐 끝 단어냐에 순서 부여
-                            if (start)
-                            {
-                                if (sortFrom)
-                                {
-                                    word.priority = 100;
-                                }
-                                else
-                                {
-                                    word.priority = 200;
-                                }
-                            }
-                            else if (end)
-                            {
-                                if (sortFrom)
-                                {
-                                    word.priority = 200;
-                                }
-                                else
-                                {
-                                    word.priority = 100;
-                                }
-                            }
-                            else if (contains)
-                            {
-                                word.priority = 300;
-                            }
+                            bool start = word.word.StartsWith(split[0]);
+                            bool end = word.word.EndsWith(split[0]);
+                            bool contains = word.word.Contains(split[0]);
 
-                            // 길이에 따라 순서 변화
-                            if (sortLength)
+                            if (start || end || contains)
                             {
-                                word.priority += word.word.Length;
-                            } else
-                            {
-                                word.priority -= word.word.Length;
+                                // 시작 단어냐 끝 단어냐에 순서 부여, 순서 등급이 작을수록 먼저 나옴
+                                if (start)
+                                {
+                                    if (sortFrom)
+                                    {
+                                        word.priority = 100;
+                                    }
+                                    else
+                                    {
+                                        word.priority = 200;
+                                    }
+                                }
+                                else if (end)
+                                {
+                                    if (sortFrom)
+                                    {
+                                        word.priority = 200;
+                                    }
+                                    else
+                                    {
+                                        word.priority = 100;
+                                    }
+                                }
+                                else if (contains)
+                                {
+                                    word.priority = 300;
+                                }
+
+                                // 길이에 따라 순서 변화
+                                if (sortLength)
+                                {
+                                    word.priority -= word.word.Length;
+                                }
+                                else
+                                {
+                                    word.priority += word.word.Length;
+                                }
+                                targets.Add(word);
                             }
-                            targets.Add(word);
                         }
                     }
                 }
-            }
 
-            // 순서에 맞게 정렬
-            targets = sortWords(targets);
-            foreach (Word word in targets)
-            {
-                createButtonFromWord(word);
+                // 순서에 맞게 정렬
+                targets = sortWords(targets);
+                foreach (Word word in targets)
+                {
+                    createButtonFromWord(word);
+                }
             }
         }
 
