@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
+//using Newtonsoft.Json;
 
 namespace KkutuMemo
 {
@@ -39,7 +41,9 @@ namespace KkutuMemo
 
 
             // 메인 로직
-            // 여기에 JSON 파일 로드하는 부분 넣기
+            words = loadWords("../../Resources/words.txt");
+            words = words.Concat(loadWords("../../Resources/long.txt", new string[] { "[긴단어]" })).ToList();
+            Debug.WriteLine(words.Count);
             this.search.TextChanged += updateSearch;
         }
 
@@ -47,6 +51,36 @@ namespace KkutuMemo
         private List<Word> words = new List<Word>(); // 단어 목록
         private List<string> history = new List<string>(); // 비공개적으로 이전에 봤던 단어를 기록, 이전으로 가기에 사용
         private List<string> lateUses = new List<string>(); // 공개적으로 이전에 봤던 단어를 기록, 검색 기록처럼 쓰임
+        private List<Button> wordButtons = new List<Button>();
+         
+        private List<Word> loadWords(string path, string[] optionalTags = null)
+        {
+            List<Word> result = new List<Word>();
+            using (StreamReader f = new StreamReader(path))
+            {
+                //string data = f.ReadToEnd();
+                //return JsonConvert.DeserializeObject<List<Word>>(data);
+
+                string line;
+                while ((line = f.ReadLine()) != null)
+                {
+                    Word word = new Word();
+                    string[] split = line.Split(' ');
+                    word.word = split[0];
+
+                    List<string> tags = split.ToList();
+                    tags.RemoveAt(0);
+                    if (optionalTags != null)
+                    {
+                        tags = tags.Concat(optionalTags).ToList();
+                    }
+                    word.tags = tags;
+
+                    result.Add(word);
+                }
+            }
+            return result;
+        }
 
         private List<Word> sortWords(List<Word> targets)
         {
@@ -76,17 +110,24 @@ namespace KkutuMemo
             {
                 Text = text,
                 Size = new Size(570, 30),
-                Font = new Font("한컴 고딕", 24),
+                Font = new Font("한컴 고딕", 12),
                 TextAlign = ContentAlignment.MiddleLeft
             };
             button.MouseClick += (sender, e) => { this.search.Text = word.word; this.current.Text = text; };
             button.Parent = this.targets;
+            wordButtons.Add(button);
 
             return button;
         }
 
         private void updateSearch(object sender, EventArgs e)
         {
+            foreach(Button button in wordButtons)
+            {
+                button.Dispose();
+            }
+            wordButtons = new List<Button>();
+
             string search = this.search.Text;
 
             string[] split = search.Split(' ');
