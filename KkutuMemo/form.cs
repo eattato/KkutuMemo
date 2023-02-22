@@ -18,6 +18,8 @@ namespace KkutuMemo
     {
         private bool dragging = false;
         private Point dragOffset;
+        private int currentPage = 0;
+        private int wordsPerPage = 7;
 
         // Init
         public form()
@@ -35,20 +37,28 @@ namespace KkutuMemo
             this.bg.MouseUp += bg_MouseUp;
 
             // 버튼 바인드
-            this.close.MouseDown += ExitApp;
-            this.minimum.MouseDown += MinimizeApp;
-            this.pin.MouseDown += PinOnTop;
-
+            this.close.MouseClick += ExitApp;
+            this.minimum.MouseClick += MinimizeApp;
+            this.pin.MouseClick += PinOnTop;
+            this.prev.MouseClick += prev_button;
+            this.next.MouseClick += next_button;
 
             // 메인 로직
             words = loadWords("../../Resources/words.txt");
             words = words.Concat(loadWords("../../Resources/long.txt", new string[] { "[긴단어]" })).ToList();
             //this.search.TextChanged += updateSearch;
             this.submit.MouseClick += updateSearch;
+            this.search.KeyPress += (sender, e) => { if (e.KeyChar == (char)13) { updateSearch(null, null); } };
+
+            this.injungWord.MouseClick += updateSearch;
+            this.deathWord.MouseClick += updateSearch;
+            this.sortFrom.MouseClick += updateSearch;
+            this.sortLength.MouseClick += updateSearch;
         }
 
         // Main
         private List<Word> words = new List<Word>(); // 단어 목록
+        private List<Word> wordsLoaded = new List<Word>(); // 현재 검색된 단어 목록
         private List<string> history = new List<string>(); // 비공개적으로 이전에 봤던 단어를 기록, 이전으로 가기에 사용
         private List<string> lateUses = new List<string>(); // 공개적으로 이전에 봤던 단어를 기록, 검색 기록처럼 쓰임
         private List<Button> wordButtons = new List<Button>();
@@ -111,7 +121,8 @@ namespace KkutuMemo
                 Text = text,
                 Size = new Size(570, 30),
                 Font = new Font("한컴 고딕", 12),
-                TextAlign = ContentAlignment.MiddleLeft
+                TextAlign = ContentAlignment.MiddleLeft,
+                Margin = new Padding(0, 0, 0, 0)
             };
             button.MouseClick += (sender, e) => { this.search.Text = word.word; this.current.Text = text; };
             button.Parent = this.targets;
@@ -120,100 +131,101 @@ namespace KkutuMemo
             return button;
         }
 
-        private void updateSearch(object sender, EventArgs e)
+        private void displayButtonOfPage()
         {
-            string search = this.search.Text;
             foreach (Button button in wordButtons)
             {
                 button.Dispose();
             }
             wordButtons = new List<Button>();
 
+            int pageMax = (currentPage + 1) * wordsPerPage;
+            if (wordsLoaded.Count < pageMax)
+            {
+                pageMax = wordsLoaded.Count;
+            }
+            Debug.WriteLine($"start {currentPage * wordsPerPage}, end {pageMax}");
+            for (int ind = currentPage * wordsPerPage; ind < pageMax; ind++)
+            {
+                Word word = wordsLoaded[ind];
+                createButtonFromWord(word);
+            }
+        }
+
+        private void updateSearch(object sender, EventArgs e)
+        {
+            string search = this.search.Text;
             if (search.Length >= 1)
             {
-                string[] split = search.Split(' ');
-                bool hanbang = this.deathWord.Active;
-                bool injung = this.injungWord.Active;
-                bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
-                bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
+                currentPage = 0;
+                this.page.Text = (currentPage + 1).ToString();
 
-                List<Word> targets = new List<Word>();
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                long start = DateTime.Now.Ticks;
+                wordsLoaded = getWords(search);
 
-                // 해당 조건에 맞는 단어들 가져옴
-                foreach (Word word in words)
-                {
-                    // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
-                    if (!(hanbang == false && word.hasTag("[한방]") || injung == false && word.hasTag("[어인정]")))
-                    {
-                        // 필터 검사
-                        bool filterDone = true;
-                        for (int ind = 1; ind < split.Length; ind++)
-                        {
-                            string filter = split[ind];
-                            if (word.checkFilter(filter) != 1)
-                            {
-                                filterDone = false;
-                                break;
-                            }
-                        }
-
-                        if (filterDone)
-                        {
-                            bool start = word.word.StartsWith(split[0]);
-                            bool end = word.word.EndsWith(split[0]);
-                            bool contains = word.word.Contains(split[0]);
-
-                            if (start || end || contains)
-                            {
-                                // 시작 단어냐 끝 단어냐에 순서 부여, 순서 등급이 작을수록 먼저 나옴
-                                if (start)
-                                {
-                                    if (sortFrom)
-                                    {
-                                        word.priority = 100;
-                                    }
-                                    else
-                                    {
-                                        word.priority = 200;
-                                    }
-                                }
-                                else if (end)
-                                {
-                                    if (sortFrom)
-                                    {
-                                        word.priority = 200;
-                                    }
-                                    else
-                                    {
-                                        word.priority = 100;
-                                    }
-                                }
-                                else if (contains)
-                                {
-                                    word.priority = 300;
-                                }
-
-                                // 길이에 따라 순서 변화
-                                if (sortLength)
-                                {
-                                    word.priority -= word.word.Length;
-                                }
-                                else
-                                {
-                                    word.priority += word.word.Length;
-                                }
-                                targets.Add(word);
-                            }
-                        }
-                    }
-                }
+                stopwatch.Stop();
+                Debug.WriteLine($"spend {stopwatch.ElapsedMilliseconds} ms on getting words..");
 
                 // 순서에 맞게 정렬
-                targets = sortWords(targets);
-                foreach (Word word in targets)
+                stopwatch = Stopwatch.StartNew();
+                wordsLoaded = sortWords(wordsLoaded);
+
+                stopwatch.Stop();
+                Debug.WriteLine($"spend {stopwatch.ElapsedMilliseconds} ms on sorting words..");
+
+                stopwatch = Stopwatch.StartNew();
+                displayButtonOfPage();
+
+                stopwatch.Stop();
+                Debug.WriteLine($"spend {stopwatch.ElapsedMilliseconds} ms on placing buttons..");
+            }
+        }
+
+        private List<Word> getWords(string search)
+        {
+            string[] split = search.Split(' ');
+            bool hanbang = this.deathWord.Active;
+            bool injung = this.injungWord.Active;
+            bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
+            bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
+
+            List<Word> targets = new List<Word>();
+
+            // 해당 조건에 맞는 단어들 가져옴
+            foreach (Word word in words)
+            {
+                // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
+                if (!(hanbang == false && word.hasTag("[한방]") || injung == false && word.hasTag("[어인정]")))
                 {
-                    createButtonFromWord(word);
+                    // 필터 검사 + 우선도 책정
+                    if (word.checkFilter(search))
+                    {
+                        targets.Add(word);
+                    }
                 }
+            }
+            return targets;
+        }
+
+        private void prev_button(object sender, MouseEventArgs e)
+        {
+            if (currentPage > 0)
+            {
+                currentPage -= 1;
+                this.page.Text = (currentPage + 1).ToString();
+                displayButtonOfPage();
+            }
+        }
+
+        private void next_button(object sender, MouseEventArgs e)
+        {
+            int pageCount = (int)Math.Ceiling((float)wordsLoaded.Count / wordsPerPage);
+            if (currentPage < pageCount)
+            {
+                currentPage += 1;
+                this.page.Text = (currentPage + 1).ToString();
+                displayButtonOfPage();
             }
         }
 
@@ -263,6 +275,11 @@ namespace KkutuMemo
             {
                 ActiveForm.TopMost = true;
             }
+        }
+
+        private void targets_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

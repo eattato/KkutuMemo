@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.bg = new System.Windows.Forms.Panel();
+            this.targets = new System.Windows.Forms.FlowLayoutPanel();
             this.current = new System.Windows.Forms.Label();
             this.glassPanel1 = new KkutuMemo.GlassPanel();
             this.pin = new KkutuMemo.MoremiButton();
@@ -42,7 +43,9 @@
             this.injungWord = new KkutuMemo.MoremiRadioButton();
             this.submit = new KkutuMemo.MoremiButton();
             this.search = new KkutuMemo.BetterTextbox();
-            this.targets = new System.Windows.Forms.FlowLayoutPanel();
+            this.prev = new KkutuMemo.MoremiButton();
+            this.next = new KkutuMemo.MoremiButton();
+            this.page = new System.Windows.Forms.Label();
             this.bg.SuspendLayout();
             this.glassPanel1.SuspendLayout();
             this.titleFrame.SuspendLayout();
@@ -51,6 +54,9 @@
             // bg
             // 
             this.bg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.bg.Controls.Add(this.page);
+            this.bg.Controls.Add(this.next);
+            this.bg.Controls.Add(this.prev);
             this.bg.Controls.Add(this.targets);
             this.bg.Controls.Add(this.sortLength);
             this.bg.Controls.Add(this.sortFrom);
@@ -63,6 +69,15 @@
             this.bg.Name = "bg";
             this.bg.Size = new System.Drawing.Size(600, 365);
             this.bg.TabIndex = 1;
+            // 
+            // targets
+            // 
+            this.targets.Location = new System.Drawing.Point(15, 120);
+            this.targets.Margin = new System.Windows.Forms.Padding(0);
+            this.targets.Name = "targets";
+            this.targets.Size = new System.Drawing.Size(570, 230);
+            this.targets.TabIndex = 10;
+            this.targets.Paint += new System.Windows.Forms.PaintEventHandler(this.targets_Paint);
             // 
             // current
             // 
@@ -273,13 +288,47 @@
             this.search.TabIndex = 1;
             this.search.Text = "여기에 텍스트를 입력하세요..";
             // 
-            // targets
+            // prev
             // 
-            this.targets.Location = new System.Drawing.Point(15, 120);
-            this.targets.Margin = new System.Windows.Forms.Padding(0);
-            this.targets.Name = "targets";
-            this.targets.Size = new System.Drawing.Size(570, 230);
-            this.targets.TabIndex = 10;
+            this.prev.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.prev.CornerRadius = 10;
+            this.prev.CornerUnder = true;
+            this.prev.FlatAppearance.BorderSize = 0;
+            this.prev.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.prev.Font = new System.Drawing.Font("한컴 고딕", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.prev.ForeColor = System.Drawing.Color.Black;
+            this.prev.Location = new System.Drawing.Point(490, 10);
+            this.prev.Name = "prev";
+            this.prev.Size = new System.Drawing.Size(28, 28);
+            this.prev.TabIndex = 11;
+            this.prev.Text = "<";
+            this.prev.UseVisualStyleBackColor = false;
+            // 
+            // next
+            // 
+            this.next.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.next.CornerRadius = 10;
+            this.next.CornerUnder = true;
+            this.next.FlatAppearance.BorderSize = 0;
+            this.next.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.next.Font = new System.Drawing.Font("한컴 고딕", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.next.ForeColor = System.Drawing.Color.Black;
+            this.next.Location = new System.Drawing.Point(560, 10);
+            this.next.Name = "next";
+            this.next.Size = new System.Drawing.Size(28, 28);
+            this.next.TabIndex = 12;
+            this.next.Text = ">";
+            this.next.UseVisualStyleBackColor = false;
+            // 
+            // page
+            // 
+            this.page.AutoSize = true;
+            this.page.Font = new System.Drawing.Font("한컴 고딕", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.page.Location = new System.Drawing.Point(531, 16);
+            this.page.Name = "page";
+            this.page.Size = new System.Drawing.Size(14, 16);
+            this.page.TabIndex = 13;
+            this.page.Text = "0";
             // 
             // form
             // 
@@ -316,6 +365,9 @@
         private MoremiRadioButton sortFrom;
         private MoremiRadioButton sortLength;
         private System.Windows.Forms.FlowLayoutPanel targets;
+        private System.Windows.Forms.Label page;
+        private MoremiButton next;
+        private MoremiButton prev;
     }
 }
 
