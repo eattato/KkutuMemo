@@ -1,0 +1,14 @@
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Release\KkutuMemo.exe.config
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Release\KkutuMemo.exe
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Release\KkutuMemo.pdb
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Release\Newtonsoft.Json.dll
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\bin\Release\Newtonsoft.Json.xml
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.csproj.AssemblyReference.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.csproj.SuggestedBindingRedirects.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.form.resources
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.Properties.Resources.resources
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.csproj.GenerateResource.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.csproj.CoreCompileInputs.cache
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.csproj.CopyComplete
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.exe
+C:\Users\seokju\source\repos\KkutuMemo\KkutuMemo\obj\Release\KkutuMemo.pdb

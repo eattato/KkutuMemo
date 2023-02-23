@@ -44,8 +44,14 @@ namespace KkutuMemo
             this.next.MouseClick += next_button;
 
             // 메인 로직
-            words = loadWords("../../Resources/words.txt");
-            words = words.Concat(loadWords("../../Resources/long.txt", new string[] { "[긴단어]" })).ToList();
+            string[] wordResources = new string[] { "attack", "defense", "hanbang", "long" };
+            words = new List<Word>();
+            foreach (string path in wordResources)
+            {
+                string resource = "../../Resources/" + path + ".txt";
+                words = words.Concat(loadWords(resource, null)).ToList();
+            }
+
             //this.search.TextChanged += updateSearch;
             this.submit.MouseClick += updateSearch;
             this.search.KeyPress += (sender, e) => { if (e.KeyChar == (char)13) { updateSearch(null, null); } };
@@ -115,7 +121,14 @@ namespace KkutuMemo
 
         private Button createButtonFromWord(Word word)
         {
-            string text = word.word + " " + String.Join(" ", word.tags.ToArray());
+            string tags = "";
+            foreach (string tag in word.tags)
+            {
+                tags += $"[{tag}] ";
+            }
+
+            //string text = word.word + " " + String.Join(" ", word.tags.ToArray());
+            string text = word.word + " " + tags;
             Button button = new Button()
             {
                 Text = text,
@@ -196,7 +209,7 @@ namespace KkutuMemo
             foreach (Word word in words)
             {
                 // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
-                if (!(hanbang == false && word.hasTag("[한방]") || injung == false && word.hasTag("[어인정]")))
+                if (!(hanbang == false && word.hasTag("한방") || injung == false && word.hasTag("어인정")))
                 {
                     // 필터 검사 + 우선도 책정
                     if (word.checkFilter(search))

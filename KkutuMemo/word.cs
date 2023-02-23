@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,44 @@ namespace KkutuMemo
             return result;
         }
 
+        public bool advancedFilter(string filter)
+        {
+            string[] split = filter.Split('~'); // 가~마 -> "가"나다라'마'바"사" x, 가~사 o
+
+            if (split.Length == 2)
+            {
+                string start = split[0];
+                string end = split[1];
+
+                if (word.StartsWith(start) && word.EndsWith(end))
+                {
+                    return true;
+                }
+            }
+            else if (filter.Contains("<"))
+            {
+                int condition;
+                bool available = int.TryParse(filter.Replace("<", ""), out condition);
+                if (available && word.Length <= condition)
+                {
+                    return true;
+                }
+            }
+            else if (filter.Contains(">"))
+            {
+                int condition;
+                bool available = int.TryParse(filter.Replace(">", ""), out condition);
+                if (available && word.Length >= condition)
+                {
+                    return true;
+                }
+            } else if (word.Contains(filter)) // 그냥 단어 포함 여부
+            {
+                return true;
+            }
+            return false;
+        }
+
         // 필터를 거쳐 나올 수 있는 단어인지 줌, 0=안됌, 1=됌, -1=필터 아님
         public bool checkFilter(string filter, bool sortFrom = true, bool sortLength = true)
         {
@@ -61,66 +100,13 @@ namespace KkutuMemo
             } else // 고급 필터
             {
                 priority = 0;
-                string[] contains = filter.Split(':'); // 나:마 -> 가"나"다라"마"바사 o
-                string[] mixed = filter.Split(';'); // 가;마;사 -> "가"나다라"마"바"사" o
-                string[] all = filter.Split('~'); // 가~마 -> "가"나다라'마'바"사" x, 가~사 o
-
-                if (contains.Length >= 2) // 내용 포함 필터
+                string[] filters = filter.Split(' ');
+                foreach (string subfilter in filters)
                 {
-                    List<string> contain = contains.ToList();
-                    foreach (char c in word)
-                    {
-                        if (contain.Count == 0)
-                        {
-                            break;
-                        } else if (c == contain[0][0])
-                        {
-                            contain.RemoveAt(0);
-                        }
-                    }
-
-                    if (contain.Count > 0)
+                    if (advancedFilter(subfilter) == false)
                     {
                         return false;
                     }
-                } else if (mixed.Length >= 2) // 혼합 필터
-                {
-                    List<string> mix = mixed.ToList();
-
-                    char first = mix[0][0];
-                    char last = mix[mix.Count - 1][0];
-
-                    mix.RemoveAt(mix.Count - 1);
-                    mix.RemoveAt(0);
-
-                    for (int ind = 1; ind < word.Length - 1; ind++)
-                    {
-                        char c = word[ind];
-                        if (mix.Count == 0)
-                        {
-                            break;
-                        }
-                        else if (c == mix[0][0])
-                        {
-                            mix.RemoveAt(0);
-                        }
-                    }
-
-                    if (mix.Count > 0 || !(first == word[0] && last == word[word.Length - 1]))
-                    {
-                        return false;
-                    }
-                }
-                else if (all.Length == 2) // 시작~끝 필터
-                {
-                    if (!(word[0] == all[0][0] && word[word.Length - 1] == all[1][0]))
-                    {
-                        return false;
-                    }
-                }
-                else if (!word.Contains(filter))
-                {
-                    return false;
                 }
             }
 
