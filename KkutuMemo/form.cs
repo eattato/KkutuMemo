@@ -53,13 +53,13 @@ namespace KkutuMemo
             }
 
             //this.search.TextChanged += updateSearch;
-            this.submit.MouseClick += updateSearch;
-            this.search.KeyPress += (sender, e) => { if (e.KeyChar == (char)13) { updateSearch(null, null); } };
+            this.submit.MouseClick += sendSearch;
+            this.search.KeyPress += (sender, e) => { if (e.KeyChar == (char)13) { updateSearch(this.search.Text); } };
 
-            this.injungWord.MouseClick += updateSearch;
-            this.deathWord.MouseClick += updateSearch;
-            this.sortFrom.MouseClick += updateSearch;
-            this.sortLength.MouseClick += updateSearch;
+            this.injungWord.MouseClick += sendSearch;
+            this.deathWord.MouseClick += sendSearch;
+            this.sortFrom.MouseClick += sendSearch;
+            this.sortLength.MouseClick += sendSearch;
         }
 
         // Main
@@ -69,6 +69,7 @@ namespace KkutuMemo
         private List<string> lateUses = new List<string>(); // 공개적으로 이전에 봤던 단어를 기록, 검색 기록처럼 쓰임
         private List<Button> wordButtons = new List<Button>();
          
+        // 단어 관련 함수
         private List<Word> loadWords(string path, string[] optionalTags = null)
         {
             List<Word> result = new List<Word>();
@@ -119,6 +120,33 @@ namespace KkutuMemo
             return result;
         }
 
+        private List<Word> getWords(string search)
+        {
+            string[] split = search.Split(' ');
+            bool hanbang = this.deathWord.Active;
+            bool injung = this.injungWord.Active;
+            bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
+            bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
+
+            List<Word> targets = new List<Word>();
+
+            // 해당 조건에 맞는 단어들 가져옴
+            foreach (Word word in words)
+            {
+                // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
+                if (!(hanbang == false && word.hasTag("한방") || injung == false && word.hasTag("어인정")))
+                {
+                    // 필터 검사 + 우선도 책정
+                    if (word.checkFilter(search))
+                    {
+                        targets.Add(word);
+                    }
+                }
+            }
+            return targets;
+        }
+
+        // 디스플레이 관련 함수
         private Button createButtonFromWord(Word word)
         {
             string tags = "";
@@ -129,6 +157,7 @@ namespace KkutuMemo
 
             //string text = word.word + " " + String.Join(" ", word.tags.ToArray());
             string text = word.word + " " + tags;
+            string lastWord = word.word[word.word.Length - 1] + "~";
             Button button = new Button()
             {
                 Text = text,
@@ -137,7 +166,7 @@ namespace KkutuMemo
                 TextAlign = ContentAlignment.MiddleLeft,
                 Margin = new Padding(0, 0, 0, 0)
             };
-            button.MouseClick += (sender, e) => { this.search.Text = word.word; this.current.Text = text; };
+            button.MouseClick += (sender, e) => { updateSearch(lastWord); };
             button.Parent = this.targets;
             wordButtons.Add(button);
 
@@ -165,9 +194,9 @@ namespace KkutuMemo
             }
         }
 
-        private void updateSearch(object sender, EventArgs e)
+        // 검색 관련 함수
+        private void updateSearch(string search)
         {
-            string search = this.search.Text;
             if (search.Length >= 1)
             {
                 currentPage = 0;
@@ -195,32 +224,13 @@ namespace KkutuMemo
             }
         }
 
-        private List<Word> getWords(string search)
+        private void sendSearch(object sender, MouseEventArgs e)
         {
-            string[] split = search.Split(' ');
-            bool hanbang = this.deathWord.Active;
-            bool injung = this.injungWord.Active;
-            bool sortFrom = this.sortFrom.Active; // t = 앞 시작 부터, f = 뒷 시작 부터
-            bool sortLength = this.sortLength.Active; // t = 긴 거 부터, f = 짧은 거 부터
-
-            List<Word> targets = new List<Word>();
-
-            // 해당 조건에 맞는 단어들 가져옴
-            foreach (Word word in words)
-            {
-                // 어인정이나 한 방 꺼지면 해당된 게 안 나와야함
-                if (!(hanbang == false && word.hasTag("한방") || injung == false && word.hasTag("어인정")))
-                {
-                    // 필터 검사 + 우선도 책정
-                    if (word.checkFilter(search))
-                    {
-                        targets.Add(word);
-                    }
-                }
-            }
-            return targets;
+            string search = this.search.Text;
+            updateSearch(search);
         }
 
+        // 페이지 관련 함수
         private void prev_button(object sender, MouseEventArgs e)
         {
             if (currentPage > 0)
