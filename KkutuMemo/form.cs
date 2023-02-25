@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-//using Newtonsoft.Json;
 
 namespace KkutuMemo
 {
@@ -120,7 +119,16 @@ namespace KkutuMemo
                         {
                             tags = tags.Concat(optionalTags).ToList();
                         }
-                        word.tags = tags;
+
+                        List<string> filteredTags = new List<string>();
+                        foreach (string tag in tags)
+                        {
+                            if (tag.Length > 0)
+                            {
+                                filteredTags.Add(tag);
+                            }
+                        }
+                        word.tags = filteredTags;
 
                         result.Add(word);
                     } finally { }

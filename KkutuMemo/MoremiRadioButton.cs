@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -108,7 +110,9 @@ namespace KkutuMemo
             {
                 this.Text = strings[status];
                 this.BackColor = colors[status];
-            } finally { }
+            } catch (Exception e) {
+                Debug.WriteLine(e.ToString());
+            }
             //Update();
         }
 
@@ -124,21 +128,32 @@ namespace KkutuMemo
             set { max = value; updateButton(); }
         }
 
+        [Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+            typeof(System.Drawing.Design.UITypeEditor))]
         public List<string> Strings
         {
             get { return strings; }
-            set { strings = value; updateButton(); }
+            set { Debug.WriteLine("텍스트 변경"); strings = value; updateButton(); }
         }
 
         public List<Color> Colors
         {
             get { return colors; }
-            set { colors = value; updateButton(); }
+            set { Debug.WriteLine("색상 변경"); colors = value; updateButton(); }
         }
 
         // init
         public MoremiChangingButton()
         {
+            if (strings.Count == 0)
+            {
+                strings.Append("moremi");
+            }
+            if (colors.Count == 0)
+            {
+                colors.Append(Color.LightGray);
+            }
+
             updateButton();
             this.MouseClick += activateButton;
         }
