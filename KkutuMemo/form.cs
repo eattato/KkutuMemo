@@ -46,7 +46,7 @@ namespace KkutuMemo
             // 메인 로직
 
             // 내부 단어 로드
-            try
+            /*try
             {
                 string[] wordResources = new string[] { "attack", "defense", "hanbang", "long" };
                 string basePath = Directory.GetCurrentDirectory();
@@ -63,7 +63,7 @@ namespace KkutuMemo
             } catch (Exception e)
             {
                 MessageBox.Show($"단어를 로1드하지 못했습니다.\n{e.ToString()}");
-            }
+            }*/
 
             // 외부 단어 로드
             try
