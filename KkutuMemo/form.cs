@@ -185,6 +185,23 @@ namespace KkutuMemo
         }
 
         // 디스플레이 관련 함수
+        private Font fitFontSize(string fontName, float fontSize, string text, int labelWidth)
+        {
+            Font font = new Font(fontName, fontSize);
+            Size textSize = TextRenderer.MeasureText(text, font);
+            if (textSize.Width > labelWidth)
+            {
+                float scale = (float)labelWidth / textSize.Width;
+                fontSize = fontSize * scale;
+                if (fontSize == 0)
+                {
+                    fontSize = 1;
+                }
+                font = new Font(fontName, fontSize);
+            }
+            return font;
+        }
+
         private Button createButtonFromWord(Word word)
         {
             string tags = "";
@@ -196,15 +213,27 @@ namespace KkutuMemo
             //string text = word.word + " " + String.Join(" ", word.tags.ToArray());
             string text = word.word + " " + tags;
             string lastWord = word.word[word.word.Length - 1] + "~";
+
+            int buttonWidth = 570;
+            int textWidth = buttonWidth - 50;
+            Font font = fitFontSize("한컴 고딕", 12, text, textWidth);
+            Size textSize = TextRenderer.MeasureText(text, font);
+
+            // 버튼 생성
             Button button = new Button()
             {
                 Text = text,
-                Size = new Size(570, 30),
-                Font = new Font("한컴 고딕", 12),
+                Size = new Size(buttonWidth, 30),
+                Font = font,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Margin = new Padding(0, 0, 0, 0)
             };
-            button.MouseClick += (sender, e) => { updateSearch(lastWord); };
+
+            button.MouseClick += (sender, e) => {
+                this.current.Text = word.word;
+                this.current.Font = fitFontSize("한컴 고딕", 18, word.word, 530);
+                updateSearch(lastWord);
+            };
             button.Parent = this.targets;
             wordButtons.Add(button);
 

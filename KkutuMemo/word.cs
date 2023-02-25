@@ -33,6 +33,43 @@ namespace KkutuMemo
             return result;
         }
 
+        public bool startsWith(string filter)
+        {
+            if (filter.Length < word.Length)
+            {
+                for (int i = 0; i < filter.Length; i++)
+                {
+                    if (word[i] != filter[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public bool endsWith(string filter)
+        {
+            if (filter.Length < word.Length)
+            {
+                for (int i = 0; i < filter.Length; i++)
+                {
+                    if (word[word.Length - filter.Length + i] != filter[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool advancedFilter(string filter)
         {
             string[] split = filter.Split('~'); // 가~마 -> "가"나다라'마'바"사" x, 가~사 o
