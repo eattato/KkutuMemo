@@ -47,21 +47,24 @@ namespace KkutuMemo
             // 메인 로직
 
             // 내부 단어 로드
-            /*string[] wordResources = new string[] { "attack", "defense", "hanbang", "_long" };
             try
             {
-                words = new List<Word>();
-                Assembly assembly = Assembly.GetExecutingAssembly();
+                string[] wordResources = new string[] { "attack", "defense", "hanbang", "long" };
+                string basePath = Directory.GetCurrentDirectory();
+                List<string> pathSplit = basePath.Split('\\').ToList();
+                pathSplit.RemoveAt(pathSplit.Count - 1);
+                pathSplit.RemoveAt(pathSplit.Count - 1);
+                basePath = String.Join("/", pathSplit);
 
                 foreach (string path in wordResources)
                 {
-                    StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(path));
+                    StreamReader reader = new StreamReader($"{basePath}/Resources/{path}.txt");
                     words = words.Concat(loadWords(reader)).ToList();
                 }
             } catch (Exception e)
             {
-                MessageBox.Show($"단어를 로드하지 못했습니다.\n{e.ToString()}");
-            }*/
+                MessageBox.Show($"단어를 로1드하지 못했습니다.\n{e.ToString()}");
+            }
 
             // 외부 단어 로드
             try
@@ -164,7 +167,7 @@ namespace KkutuMemo
                 if (!(hanbang == false && word.hasTag("한방") || injung == false && word.hasTag("어인정")))
                 {
                     // 필터 검사 + 우선도 책정
-                    if (word.checkFilter(search))
+                    if (word.checkFilter(search, sortFrom, sortLength))
                     {
                         targets.Add(word);
                     }

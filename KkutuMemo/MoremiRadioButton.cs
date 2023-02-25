@@ -82,4 +82,65 @@ namespace KkutuMemo
             this.MouseClick += activateButton;
         }
     }
+
+    internal class MoremiChangingButton : MoremiButton
+    {
+        private List<string> strings = new List<string>();
+        private List<Color> colors = new List<Color>();
+        private int status = 0;
+        private int max = 0;
+
+        // Event
+        private void activateButton(object sender, EventArgs e)
+        {
+            status += 1;
+            if (status > max)
+            {
+                status = 0;
+            }
+            updateButton();
+        }
+
+        // Properties
+        private void updateButton()
+        {
+            try
+            {
+                this.Text = strings[status];
+                this.BackColor = colors[status];
+            } finally { }
+            //Update();
+        }
+
+        public int Status
+        {
+            get { return status; }
+            set { status = value; updateButton(); }
+        }
+
+        public int Max
+        {
+            get { return max; }
+            set { max = value; updateButton(); }
+        }
+
+        public List<string> Strings
+        {
+            get { return strings; }
+            set { strings = value; updateButton(); }
+        }
+
+        public List<Color> Colors
+        {
+            get { return colors; }
+            set { colors = value; updateButton(); }
+        }
+
+        // init
+        public MoremiChangingButton()
+        {
+            updateButton();
+            this.MouseClick += activateButton;
+        }
+    }
 }
