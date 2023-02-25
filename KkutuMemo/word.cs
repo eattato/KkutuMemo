@@ -74,7 +74,14 @@ namespace KkutuMemo
         {
             string[] split = filter.Split('~'); // 가~마 -> "가"나다라'마'바"사" x, 가~사 o
 
-            if (split.Length == 2)
+            if (filter.StartsWith("#"))
+            {
+                filter = filter.Remove(0, 1);
+                if (hasTag(filter))
+                {
+                    return true;
+                }
+            } else if (split.Length == 2)
             {
                 string start = split[0];
                 string end = split[1];
