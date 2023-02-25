@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 //using Newtonsoft.Json;
 
 namespace KkutuMemo
@@ -44,12 +45,38 @@ namespace KkutuMemo
             this.next.MouseClick += next_button;
 
             // 메인 로직
-            string[] wordResources = new string[] { "attack", "defense", "hanbang", "long" };
-            words = new List<Word>();
-            foreach (string path in wordResources)
+
+            // 내부 단어 로드
+            /*string[] wordResources = new string[] { "attack", "defense", "hanbang", "_long" };
+            try
             {
-                string resource = "../../Resources/" + path + ".txt";
-                words = words.Concat(loadWords(resource, null)).ToList();
+                words = new List<Word>();
+                Assembly assembly = Assembly.GetExecutingAssembly();
+
+                foreach (string path in wordResources)
+                {
+                    StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(path));
+                    words = words.Concat(loadWords(reader)).ToList();
+                }
+            } catch (Exception e)
+            {
+                MessageBox.Show($"단어를 로드하지 못했습니다.\n{e.ToString()}");
+            }*/
+
+            // 외부 단어 로드
+            try
+            {
+                string basePath = Directory.GetCurrentDirectory();
+                string[] wordResources = new string[] { "attack", "defense", "hanbang", "long", "extension" };
+                foreach (string origin in wordResources)
+                {
+                    string path = $"{basePath}/Resources/{origin}.txt";
+                    StreamReader reader = new StreamReader(path);
+                    words = words.Concat(loadWords(reader)).ToList();
+                }
+            } catch (Exception e)
+            {
+                MessageBox.Show($"단어를 로드하지 못했습니다.\n{e.ToString()}");
             }
 
             //this.search.TextChanged += updateSearch;
@@ -70,30 +97,30 @@ namespace KkutuMemo
         private List<Button> wordButtons = new List<Button>();
          
         // 단어 관련 함수
-        private List<Word> loadWords(string path, string[] optionalTags = null)
+        private List<Word> loadWords(StreamReader reader, string[] optionalTags = null)
         {
             List<Word> result = new List<Word>();
-            using (StreamReader f = new StreamReader(path))
+            using (reader)
             {
-                //string data = f.ReadToEnd();
-                //return JsonConvert.DeserializeObject<List<Word>>(data);
-
                 string line;
-                while ((line = f.ReadLine()) != null)
+                while ((line = reader.ReadLine()) != null)
                 {
-                    Word word = new Word();
-                    string[] split = line.Split(' ');
-                    word.word = split[0];
-
-                    List<string> tags = split.ToList();
-                    tags.RemoveAt(0);
-                    if (optionalTags != null)
+                    try
                     {
-                        tags = tags.Concat(optionalTags).ToList();
-                    }
-                    word.tags = tags;
+                        Word word = new Word();
+                        string[] split = line.Split(' ');
+                        word.word = split[0];
 
-                    result.Add(word);
+                        List<string> tags = split.ToList();
+                        tags.RemoveAt(0);
+                        if (optionalTags != null)
+                        {
+                            tags = tags.Concat(optionalTags).ToList();
+                        }
+                        word.tags = tags;
+
+                        result.Add(word);
+                    } finally { }
                 }
             }
             return result;
