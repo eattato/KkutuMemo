@@ -74,7 +74,16 @@ namespace KkutuMemo
                 {
                     string path = $"{basePath}/Resources/{origin}.txt";
                     StreamReader reader = new StreamReader(path);
-                    words = words.Concat(loadWords(reader)).ToList();
+
+                    string[] additionalTags = null;
+                    if (origin == "attack")
+                    {
+                        additionalTags = new string[] { "공격" };
+                    } else if (origin == "defense")
+                    {
+                        additionalTags = new string[] { "방어" };
+                    }
+                    words = words.Concat(loadWords(reader, additionalTags)).ToList();
                 }
             } catch (Exception e)
             {

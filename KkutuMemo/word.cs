@@ -19,6 +19,11 @@ namespace KkutuMemo
             return tags.Contains(target);
         }
 
+        /*public bool canDuum(char target)
+        {
+
+        }*/
+
         public bool hasTags(string[] targets)
         {
             bool result = true;
@@ -57,7 +62,8 @@ namespace KkutuMemo
             {
                 for (int i = 0; i < filter.Length; i++)
                 {
-                    if (word[word.Length - filter.Length + i] != filter[i])
+                    char wordCurrent = word[word.Length - filter.Length + i];
+                    if (wordCurrent != filter[i])
                     {
                         return false;
                     }
