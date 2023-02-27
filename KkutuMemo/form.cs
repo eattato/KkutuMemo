@@ -8,9 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using SnagFree.TrayApp.Core;
+using System.Threading;
 
 namespace KkutuMemo
 {
@@ -60,7 +63,8 @@ namespace KkutuMemo
                     StreamReader reader = new StreamReader($"{basePath}/Resources/{path}.txt");
                     words = words.Concat(loadWords(reader)).ToList();
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 MessageBox.Show($"단어를 로1드하지 못했습니다.\n{e.ToString()}");
             }*/
@@ -98,15 +102,21 @@ namespace KkutuMemo
             this.deathWord.MouseClick += sendSearch;
             this.sortFrom.MouseClick += sendSearch;
             this.sortLength.MouseClick += sendSearch;
+
+            keyboardHook = new GlobalKeyboardHook();
+            keyboardHook.KeyboardPressed += autoInput;
         }
 
         // Main
         private List<Word> words = new List<Word>(); // 단어 목록
         private List<Word> wordsLoaded = new List<Word>(); // 현재 검색된 단어 목록
+        private string selected = null;
+
         private List<string> history = new List<string>(); // 비공개적으로 이전에 봤던 단어를 기록, 이전으로 가기에 사용
         private List<string> lateUses = new List<string>(); // 공개적으로 이전에 봤던 단어를 기록, 검색 기록처럼 쓰임
         private List<Button> wordButtons = new List<Button>();
-         
+        private GlobalKeyboardHook keyboardHook;
+
         // 단어 관련 함수
         private List<Word> loadWords(StreamReader reader, string[] optionalTags = null)
         {
@@ -239,6 +249,7 @@ namespace KkutuMemo
             };
 
             button.MouseClick += (sender, e) => {
+                selected = word.word;
                 this.current.Text = word.word;
                 this.current.Font = fitFontSize("한컴 고딕", 18, word.word, 530);
                 updateSearch(lastWord);
@@ -325,6 +336,58 @@ namespace KkutuMemo
                 currentPage += 1;
                 this.page.Text = (currentPage + 1).ToString();
                 displayButtonOfPage();
+            }
+        }
+
+        // 자동 입력기
+        private bool[] inputPressed = new bool[] { false, false, false }; // 세번째는 디바운드용
+        private void autoInput(object sender, GlobalKeyboardHookEventArgs e)
+        {
+            int inputIndex = -1;
+            bool status = false;
+            Keys key = (Keys)e.KeyboardData.VirtualCode;
+
+            if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyDown) { status = true; }
+            if (key == Keys.LControlKey) { inputIndex = 0; }
+            else if (key == Keys.B) { inputIndex = 1; }
+
+            if (inputIndex != -1)
+            {
+                inputPressed[inputIndex] = status;
+                if (status == false)
+                {
+                    inputPressed[2] = false;
+                }
+            }
+
+            if (inputPressed[0] == true && inputPressed[1] == true && inputPressed[2] == false)
+            {
+                //Console.WriteLine("auto input");
+                inputPressed[2] = true;
+
+                // 타자 침
+                string currentWriting = selected;
+                new Thread(() =>
+                {
+                    foreach (char target in currentWriting) // 한 글자로 쪼갬
+                    {
+                        SendKeys.SendWait(target.ToString());
+                        Thread.Sleep(100);
+                        /*char[] split = Hangul.split(target);
+                        foreach (char segment in split) // 한 자모로 쪼갬
+                        {
+                            if (segment != ' ')
+                            {
+                                foreach (char superSegment in Hangul.superSplit(segment)) // 키보드 최소 단위로 쪼갬
+                                {
+                                    SendKeys.Send(superSegment.ToString());
+                                }
+                            }
+                        }*/
+                    }
+                    /*SendKeys.Send(" ");
+                    SendKeys.Send("{BACKSPACE}");*/
+                }).Start();
             }
         }
 

@@ -32,7 +32,10 @@ namespace KkutuMemo
                 // 종성이 없는 경우가 있을 수 있음, 종성이 없으면 temp가 0으로 나옴
                 char jong = craft[2][temp];
                 return new char[] { cho, jung, jong };
-            } else
+            } else if (target >= 'ㄱ' && target <= 'ㅎ') { // 초성만 있을 경우
+                return new char[] { target, ' ', ' ' };
+            }
+            else
             {
                 return null;
             }
@@ -85,6 +88,29 @@ namespace KkutuMemo
             } else
             {
                 return target;
+            }
+        }
+
+        public static char[] superSplit(char target)
+        {
+            Dictionary<char, char[]> map = new Dictionary<char, char[]>();
+            map.Add('ㄳ', new char[] { 'ㄱ', 'ㅅ' });
+            map.Add('ㄵ', new char[] { 'ㄴ', 'ㅈ' });
+            map.Add('ㄶ', new char[] { 'ㄴ', 'ㅎ' });
+            map.Add('ㄺ', new char[] { 'ㄹ', 'ㄱ' });
+            map.Add('ㄻ', new char[] { 'ㄹ', 'ㅁ' });
+            map.Add('ㄼ', new char[] { 'ㄹ', 'ㅂ' });
+            map.Add('ㄽ', new char[] { 'ㄹ', 'ㅅ' });
+            map.Add('ㄾ', new char[] { 'ㄹ', 'ㅌ' });
+            map.Add('ㄿ', new char[] { 'ㄹ', 'ㅍ' });
+            map.Add('ㅀ', new char[] { 'ㄹ', 'ㅎ' });
+            map.Add('ㅄ', new char[] { 'ㅂ', 'ㅅ' });
+
+            if (map.ContainsKey(target)) {
+                return map[target];
+            } else
+            {
+                return new char[] { target };
             }
         }
     }

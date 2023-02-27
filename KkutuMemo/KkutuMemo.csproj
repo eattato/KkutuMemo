@@ -65,6 +65,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Hangul.cs" />
+    <Compile Include="KeyHandler.cs" />
     <Compile Include="KkutuButton.cs">
       <SubType>Component</SubType>
     </Compile>
