@@ -44,7 +44,7 @@ namespace KkutuMemo
             {
                 for (int i = 0; i < filter.Length; i++)
                 {
-                    if (word[i] != filter[i])
+                    if ( !(word[i] == filter[i] || word[i] == Hangul.duum(filter[i])) )
                     {
                         return false;
                     }
@@ -63,7 +63,7 @@ namespace KkutuMemo
                 for (int i = 0; i < filter.Length; i++)
                 {
                     char wordCurrent = word[word.Length - filter.Length + i];
-                    if (wordCurrent != filter[i])
+                    if (!(wordCurrent == filter[i] || wordCurrent == Hangul.duum(filter[i])) )
                     {
                         return false;
                     }
@@ -92,7 +92,7 @@ namespace KkutuMemo
                 string start = split[0];
                 string end = split[1];
 
-                if (word.StartsWith(start) && word.EndsWith(end))
+                if (startsWith(start) && endsWith(end))
                 {
                     return true;
                 }
@@ -124,7 +124,7 @@ namespace KkutuMemo
         // 필터를 거쳐 나올 수 있는 단어인지 줌, 0=안됌, 1=됌, -1=필터 아님
         public bool checkFilter(string filter, bool sortFrom = true, bool sortLength = true)
         {
-            if (word.StartsWith(filter)) // 필터로 시작하는 경우
+            if (startsWith(filter)) // 필터로 시작하는 경우
             {
                 if (sortFrom)
                 {
@@ -134,7 +134,7 @@ namespace KkutuMemo
                 {
                     priority = 200;
                 }
-            } else if (word.EndsWith(filter)) // 필터로 끝나는 경우
+            } else if (endsWith(filter)) // 필터로 끝나는 경우
             {
                 if (sortFrom)
                 {
