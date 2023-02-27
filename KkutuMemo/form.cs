@@ -73,21 +73,19 @@ namespace KkutuMemo
             try
             {
                 string basePath = Directory.GetCurrentDirectory();
-                string[] wordResources = new string[] { "attack", "defense", "hanbang", "long", "extension" };
-                foreach (string origin in wordResources)
-                {
-                    string path = $"{basePath}/Resources/{origin}.txt";
-                    StreamReader reader = new StreamReader(path);
+                string[] defaultWordResources = new string[] { "attack", "defense", "hanbang", "long", "mission" };
 
-                    string[] additionalTags = null;
-                    if (origin == "attack")
-                    {
-                        additionalTags = new string[] { "공격" };
-                    } else if (origin == "defense")
-                    {
-                        additionalTags = new string[] { "방어" };
-                    }
-                    words = words.Concat(loadWords(reader, additionalTags)).ToList();
+                foreach (string origin in defaultWordResources)
+                {
+                    string path = $"{basePath}/Resources/default/{origin}.txt";
+                    readWordsFromTxt(path);
+                }
+
+                DirectoryInfo extensions = new DirectoryInfo($"{basePath}/Resources/extensions");
+                foreach (FileInfo file in extensions.GetFiles("*.txt"))
+                {
+                    string path = $"{basePath}/Resources/extensions/{file.Name}";
+                    readWordsFromTxt(path);
                 }
             } catch (Exception e)
             {
@@ -130,30 +128,59 @@ namespace KkutuMemo
                     {
                         Word word = new Word();
                         string[] split = line.Split(' ');
-                        word.word = split[0];
 
-                        List<string> tags = split.ToList();
-                        tags.RemoveAt(0);
-                        if (optionalTags != null)
+                        bool collapsed = false;
+                        foreach (Word check in words)
                         {
-                            tags = tags.Concat(optionalTags).ToList();
-                        }
-
-                        List<string> filteredTags = new List<string>();
-                        foreach (string tag in tags)
-                        {
-                            if (tag.Length > 0)
+                            if (check.word == split[0])
                             {
-                                filteredTags.Add(tag);
+                                collapsed = true;
+                                break;
                             }
                         }
-                        word.tags = filteredTags;
 
-                        result.Add(word);
+                        if (collapsed == false)
+                        {
+                            word.word = split[0];
+
+                            List<string> tags = split.ToList();
+                            tags.RemoveAt(0);
+                            if (optionalTags != null)
+                            {
+                                tags = tags.Concat(optionalTags).ToList();
+                            }
+
+                            List<string> filteredTags = new List<string>();
+                            foreach (string tag in tags)
+                            {
+                                if (tag.Length > 0)
+                                {
+                                    filteredTags.Add(tag);
+                                }
+                            }
+                            word.tags = filteredTags;
+
+                            result.Add(word);
+                        }
                     } finally { }
                 }
             }
             return result;
+        }
+
+        private void readWordsFromTxt(string path, string origin = null)
+        {
+            StreamReader reader = new StreamReader(path);
+            string[] additionalTags = null;
+            if (origin == "attack")
+            {
+                additionalTags = new string[] { "공격" };
+            }
+            else if (origin == "defense")
+            {
+                additionalTags = new string[] { "방어" };
+            }
+            words = words.Concat(loadWords(reader, additionalTags)).ToList();
         }
 
         private List<Word> sortWords(List<Word> targets)
@@ -380,7 +407,8 @@ namespace KkutuMemo
                             {
                                 foreach (char superSegment in Hangul.superSplit(segment)) // 키보드 최소 단위로 쪼갬
                                 {
-                                    SendKeys.Send(superSegment.ToString());
+                                    SendKeys.SendWait($"{{{superSegment.ToString()} 1}}");
+                                    Thread.Sleep(25);
                                 }
                             }
                         }*/

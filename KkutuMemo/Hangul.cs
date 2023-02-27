@@ -94,6 +94,14 @@ namespace KkutuMemo
         public static char[] superSplit(char target)
         {
             Dictionary<char, char[]> map = new Dictionary<char, char[]>();
+            map.Add('ㅘ', new char[] { 'ㅗ', 'ㅏ' });
+            map.Add('ㅙ', new char[] { 'ㅗ', 'ㅐ' });
+            map.Add('ㅚ', new char[] { 'ㅗ', 'ㅣ' });
+            map.Add('ㅝ', new char[] { 'ㅜ', 'ㅓ' });
+            map.Add('ㅞ', new char[] { 'ㅜ', 'ㅔ' });
+            map.Add('ㅟ', new char[] { 'ㅜ', 'ㅣ' });
+            map.Add('ㅢ', new char[] { 'ㅡ', 'ㅣ' });
+
             map.Add('ㄳ', new char[] { 'ㄱ', 'ㅅ' });
             map.Add('ㄵ', new char[] { 'ㄴ', 'ㅈ' });
             map.Add('ㄶ', new char[] { 'ㄴ', 'ㅎ' });
