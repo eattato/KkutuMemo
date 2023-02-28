@@ -78,7 +78,7 @@ namespace KkutuMemo
                 foreach (string origin in defaultWordResources)
                 {
                     string path = $"{basePath}/Resources/default/{origin}.txt";
-                    readWordsFromTxt(path);
+                    readWordsFromTxt(path, origin);
                 }
 
                 DirectoryInfo extensions = new DirectoryInfo($"{basePath}/Resources/extensions");
@@ -126,41 +126,58 @@ namespace KkutuMemo
                 {
                     try
                     {
-                        Word word = new Word();
-                        string[] split = line.Split(' ');
-
-                        bool collapsed = false;
-                        foreach (Word check in words)
+                        // 전체 태그
+                        if (line[0] == '[' && line[line.Length - 1] == ']')
                         {
-                            if (check.word == split[0])
-                            {
-                                collapsed = true;
-                                break;
-                            }
-                        }
-
-                        if (collapsed == false)
-                        {
-                            word.word = split[0];
-
-                            List<string> tags = split.ToList();
-                            tags.RemoveAt(0);
+                            string tag = line.Substring(1, line.Length - 2);
+                            List<string> tags;
                             if (optionalTags != null)
                             {
-                                tags = tags.Concat(optionalTags).ToList();
-                            }
-
-                            List<string> filteredTags = new List<string>();
-                            foreach (string tag in tags)
+                                tags = optionalTags.ToList();
+                            } else
                             {
-                                if (tag.Length > 0)
+                                tags = new List<string>();
+                            }
+                            tags.Add(tag);
+                            optionalTags = tags.ToArray();
+                        } else // 단어 로드
+                        {
+                            Word word = new Word();
+                            string[] split = line.Split(' ');
+
+                            bool collapsed = false;
+                            foreach (Word check in words)
+                            {
+                                if (check.word == split[0])
                                 {
-                                    filteredTags.Add(tag);
+                                    collapsed = true;
+                                    break;
                                 }
                             }
-                            word.tags = filteredTags;
 
-                            result.Add(word);
+                            if (collapsed == false)
+                            {
+                                word.word = split[0];
+
+                                List<string> tags = split.ToList();
+                                tags.RemoveAt(0);
+                                if (optionalTags != null)
+                                {
+                                    tags = tags.Concat(optionalTags).ToList();
+                                }
+
+                                List<string> filteredTags = new List<string>();
+                                foreach (string tag in tags)
+                                {
+                                    if (tag.Length > 0)
+                                    {
+                                        filteredTags.Add(tag);
+                                    }
+                                }
+                                word.tags = filteredTags;
+
+                                result.Add(word);
+                            }
                         }
                     } finally { }
                 }
